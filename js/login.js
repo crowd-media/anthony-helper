@@ -10,48 +10,29 @@ class Login {
 
 		this.form.addEventListener("submit", (e) => {
 			e.preventDefault();
-			var error = 0;
-			self.fields.forEach((field) => {
-				const input = document.querySelector(`#${field}`);
-				if (self.validateFields(input) == false) {
-					error++;
-				}
-			});
-			if (error == 0) {
-				//do login api here
-				localStorage.setItem("auth", 1);
-				this.form.submit();
-			}
+
+
+			const data = new FormData()
+			const username = document.getElementById("username")
+			const password = document.getElementById("password")
+			data.append("username", username.value);
+			data.append("password", password.value);
+
+			console.log(this.form);
+			console.log(this.form);
+			fetch("https://talk.crowdmedia.com/token", { method: "POST", body: data })
+				.then(
+					res => res.json()
+				).then(
+					jsonRes => {
+						localStorage.setItem("auth", jsonRes.access_token);
+						this.form.submit()
+					})
+				.catch(err => console.log(err))
+
 		});
 	}
 
-	validateFields(field) {
-		if (field.value.trim() === "") {
-			this.setStatus(
-				field,
-				`${field.previousElementSibling.innerText} cannot be blank`,
-				"error"
-			);
-			return false;
-		} else {
-			if (field.type == "password") {
-				if (field.value.length < 8) {
-					this.setStatus(
-						field,
-						`${field.previousElementSibling.innerText} must be at least 8 characters`,
-						"error"
-					);
-					return false;
-				} else {
-					this.setStatus(field, null, "success");
-					return true;
-				}
-			} else {
-				this.setStatus(field, null, "success");
-				return true;
-			}
-		}
-	}
 
 	setStatus(field, message, status) {
 		const errorMessage = field.parentElement.querySelector(".error-message");
