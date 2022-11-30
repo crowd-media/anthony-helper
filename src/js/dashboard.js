@@ -51,7 +51,7 @@ function handleClick() {
     const alpha_pattern_raw = document.getElementById("alpha_pattern").value
     const sr_enabled = document.getElementById("sr_enabled").checked
     const synth_model = sr_enabled ? "sd_nogan" : "sd_gan"
-    const sr_model = sr_enabled ? "sr_01" : ""
+    const sr_model = sr_enabled ? "sr_01" : null
 
     const alpha_pattern = alpha_pattern_raw.split(",").map(Number)
     const pads = pads_raw.split(",").map(Number)
