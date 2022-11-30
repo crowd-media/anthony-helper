@@ -2,6 +2,7 @@ class Auth {
 	constructor() {
 		document.querySelector("body").style.display = "none";
 		const auth = localStorage.getItem("auth");
+		console.log({ auth });
 		this.validateAuth(auth);
 	}
 
@@ -11,6 +12,7 @@ class Auth {
 		const exp = token_data.exp * 1000;
 		const nowDate = new Date()
 		const now = nowDate.getTime()
+		console.log({ now, exp });
 		if (now > exp) {
 			localStorage.setItem("auth", null)
 			window.location.assign("./index.html")
