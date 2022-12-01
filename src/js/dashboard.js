@@ -20,15 +20,43 @@ function addError(error_msg) {
     }, 4000)
 }
 
+function checkLocalStorage() {
+    const videoList = JSON.parse(localStorage.getItem("videos")) || []
+    console.log(videoList);
+    videoList.forEach((video) => {
+        addResults(video)
+    });
+}
+
+function clearLocalStorage() {
+    localStorage.setItem("videos", "[]")
+}
+
+function addToLocalStorage(video) {
+    const videoList = JSON.parse(localStorage.getItem("videos")) || []
+    console.log(videoList);
+    videoList.push(video)
+    localStorage.setItem("videos", JSON.stringify(videoList))
+}
+
+function showVideo(src) {
+    const videoElement = document.getElementById("video-element")
+    videoElement.src = src
+    videoElement.currentTime = 0
+    videoElement.paused = false
+}
+
 // Adds a result row
-function addResults({ result, pads, alpha_pattern }) {
-    console.log("got response");
+function addResults(video) {
+    const { result, face, pads, alpha_pattern } = video
     const resultsElement = document.getElementById("results-table")
     const row = document.createElement("tr")
 
+    row.addEventListener("click", () => showVideo(result))
+
     let child
     child = document.createElement("td")
-    child.innerHTML = result
+    child.innerHTML = face
     row.appendChild(child)
 
     child = document.createElement("td")
@@ -102,8 +130,9 @@ function handleClick() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        console.log({ data })
-                        addResults({ result: data.result, pads, alpha_pattern })
+                        const video = { result: data.result, face, pads, alpha_pattern }
+                        addResults(video)
+                        addToLocalStorage(video)
                     })
                     .catch(err => { addError("Synthesis failed, check the console"), console.error(err) })
             } else {
@@ -114,3 +143,5 @@ function handleClick() {
         .catch(err => addError("Video does not exist"))
 
 }
+
+checkLocalStorage()
