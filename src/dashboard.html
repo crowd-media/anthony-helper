@@ -19,32 +19,38 @@
       <h1 class="text-center">Anthony helper</h1>
       <div id="error-container"></div>
       <p class="text-center"><a href="#" class="logout">Log Out</a></p>
-      <div id="editor_holder">
-        <div>org_id</div>
-        <input type="text" id="org_id" class="input" />
-        <div>head_id</div>
-        <input type="text" id="head_id" class="input" />
-        <div>video_id</div>
-        <input type="text" id="video_id" class="input" />
-        <div>pads</div>
-        <input type="text" id="pads" class="input" />
-        <div>alpha_pattern</div>
-        <input type="text" id="alpha_pattern" class="input" />
-        <div>text</div>
-        <input type="text" id="text" class="input" />
-        <div>sr_enabled</div>
-        <input type="checkbox" id="sr_enabled" />
+      <div class="table-video-container">
+        <div id="editor_holder">
+          <div>org_id</div>
+          <input type="text" id="org_id" class="input" />
+          <div>head_id</div>
+          <input type="text" id="head_id" class="input" />
+          <div>video_id</div>
+          <input type="text" id="video_id" class="input" />
+          <div>pads</div>
+          <input type="text" id="pads" class="input" />
+          <div>alpha_pattern</div>
+          <input type="text" id="alpha_pattern" class="input" />
+          <div>text</div>
+          <input type="text" id="text" class="input" />
+          <div>sr_enabled</div>
+          <input type="checkbox" id="sr_enabled" />
+        </div>
+        <video id="video-element" controls></video>
       </div>
       <button onclick="handleClick()">Click to generate</button>
       <div>
         <h4>results</h4>
         <table id="results-table">
           <tr>
-            <td>url</td>
+            <td>face</td>
             <td>pads</td>
             <td>alpha_pattern</td>
           </tr>
         </table>
+        <button onclick="clearLocalStorage()">
+          Click to delete (needs refresh)
+        </button>
       </div>
     </div>
   </body>
