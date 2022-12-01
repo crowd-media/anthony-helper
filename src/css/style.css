@@ -1,0 +1,9 @@
+video {
+  width: 500px;
+  height: 300px;
+}
+
+.table-video-container {
+  display: grid;
+  grid-template-columns: auto auto;
+}
