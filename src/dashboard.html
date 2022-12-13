@@ -29,23 +29,31 @@
           <input type="text" id="video_id" class="input" />
           <div>pads</div>
           <input type="text" id="pads" class="input" />
-          <div>alpha_pattern</div>
-          <input type="text" id="alpha_pattern" class="input" />
+          <div>alpha_blending</div>
+          <input type="text" id="alpha_blending" class="input" />
           <div>text</div>
           <input type="text" id="text" class="input" />
           <div>sr_enabled</div>
           <input type="checkbox" id="sr_enabled" />
+          <button onclick="handleClick()">Click to generate</button>
         </div>
-        <video id="video-element" controls></video>
+        <div>
+          <video id="video-element" controls></video>
+          <div style="display: flex">
+            <button id="update-video-button">
+              Edit video to match paddings
+            </button>
+            <div id="put-status" />
+          </div>
+        </div>
       </div>
-      <button onclick="handleClick()">Click to generate</button>
       <div>
         <h4>results</h4>
         <table id="results-table">
           <tr>
             <td>face</td>
             <td>pads</td>
-            <td>alpha_pattern</td>
+            <td>alpha_blending</td>
           </tr>
         </table>
         <button onclick="clearLocalStorage()">
