@@ -1,9 +1,42 @@
+:root {
+  --primary: #0046ff;
+  --primary-light: #006eff;
+  --primary-lighter: #0083ff;
+  --secondary: #875aff;
+  --tertiray: #ff6e1e;
+  --gradient: linear-gradient(var(--primary), var(--secondary));
+  --body: #232323;
+}
+
+div {
+  color: var(--body);
+}
+
 video {
   width: 500px;
   height: 300px;
 }
 
+.video-row {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.video-row:hover {
+  color: var(--primary-lighter) !important;
+}
+
 .table-video-container {
   display: grid;
   grid-template-columns: auto auto;
+}
+
+input {
+  padding: 0.2em 0.5em;
+}
+
+button {
+  padding: 0.2em 0.5em;
+  border: none;
+  border-radius: 0.3em;
 }
