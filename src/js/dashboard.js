@@ -2,10 +2,12 @@ const request_type = "synthesize_t2l"
 const tts_provider = "apiaudio"
 const tts_voice = "sara"
 
+const API_BASE = "https://talk.crowdmedia.com"
+
 let errorTimeout;
+
 // Shows an error message for 4s
 function addError(error_msg) {
-    console.log("got error");
     const errorElement = document.getElementById("error-container")
     errorElement.innerHTML = error_msg
     errorElement.classList.add("error-display")
@@ -39,20 +41,35 @@ function addToLocalStorage(video) {
     localStorage.setItem("videos", JSON.stringify(videoList))
 }
 
-function showVideo(src) {
+function getHeaders() {
+    return {
+        Authorization: `Bearer ${localStorage.getItem("auth")}`,
+        Accept: 'application/json',
+        "Content-Type": "application/json"
+    }
+}
+
+function showVideo(video) {
+    const { result } = video;
     const videoElement = document.getElementById("video-element")
-    videoElement.src = src
+    videoElement.src = result
     videoElement.currentTime = 0
     videoElement.paused = false
+
+    updatePutStatus("")
+
+    const updateVideoButton = document.getElementById("update-video-button")
+    updateVideoButton.addEventListener("click", () => putVideo(video))
 }
 
 // Adds a result row
 function addResults(video) {
-    const { result, face, pads, alpha_pattern } = video
+    const { result, face, pads, alpha_blending } = video
     const resultsElement = document.getElementById("results-table")
     const row = document.createElement("tr")
 
-    row.addEventListener("click", () => showVideo(result))
+    row.addEventListener("click", () => showVideo(video))
+    row.classList.add("video-row")
 
     let child
     child = document.createElement("td")
@@ -64,7 +81,7 @@ function addResults(video) {
     row.appendChild(child)
 
     child = document.createElement("td")
-    child.innerHTML = alpha_pattern
+    child.innerHTML = alpha_blending
     row.appendChild(child)
 
     resultsElement.appendChild(row)
@@ -76,12 +93,12 @@ function handleClick() {
     const head_id = document.getElementById("head_id").value
     const video_id = document.getElementById("video_id").value
     const pads_raw = document.getElementById("pads").value
-    const alpha_pattern_raw = document.getElementById("alpha_pattern").value
+    const alpha_blending_raw = document.getElementById("alpha_blending").value
     const sr_enabled = document.getElementById("sr_enabled").checked
     const synth_model = sr_enabled ? "sd_nogan" : "sd_gan"
     const sr_model = sr_enabled ? "sr_01" : null
 
-    const alpha_pattern = alpha_pattern_raw.split(",").map(Number)
+    const alpha_blending = alpha_blending_raw.split(",").map(Number)
     const pads = pads_raw.split(",").map(Number)
     const face = [org_id, head_id, video_id]
 
@@ -90,8 +107,8 @@ function handleClick() {
         return
     }
 
-    if (alpha_pattern.length !== 4) {
-        addError("Malformatted alpha_pattern")
+    if (alpha_blending.length !== 4) {
+        addError("Malformatted alpha_blending")
         return
     }
 
@@ -100,26 +117,22 @@ function handleClick() {
         face,
         synth_model,
         sr_model,
-        alpha_pattern,
-        alpha_pattern,
+        // lol
+        alpha_pattern: alpha_blending,
         pads, text,
         tts_provider,
         tts_voice,
 
     }
 
-    const headers = {
-        Authorization: `Bearer ${localStorage.getItem("auth")}`,
-        Accept: 'application/json',
-        //"Content-Type": "application/json"
-    }
+    const headers = getHeaders()
 
     console.log(JSON.stringify(body));
-    fetch(`https://talk.crowdmedia.com/api/v1/crud/videos/${org_id}/${head_id}/${video_id}`, { headers })
+    fetch(`${API_BASE}/api/v1/crud/videos/${org_id}/${head_id}/${video_id}`, { headers })
         .then(data => data.json())
         .then((data) => {
             if (!data.detail) {
-                fetch("https://talk.crowdmedia.com/api/v1/test_synthesize_t2l", {
+                fetch(`${API_BASE}/api/v1/test_synthesize_t2l`, {
                     method: "POST",
                     body: JSON.stringify({ body }),
                     headers:
@@ -130,7 +143,7 @@ function handleClick() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        const video = { result: data.result, face, pads, alpha_pattern }
+                        const video = { result: data.result, face, pads, alpha_blending }
                         addResults(video)
                         addToLocalStorage(video)
                     })
@@ -141,6 +154,28 @@ function handleClick() {
         }
         )
         .catch(err => addError("Video does not exist"))
+
+}
+
+function updatePutStatus(status) {
+    const badge = document.getElementById("put-status")
+    badge.innerHTML = status
+}
+
+function putVideo(video) {
+    const { face, pads, alpha_blending } = video
+    const [org_id, head_id, video_id] = face
+
+    const headers = getHeaders()
+
+    fetch(`${API_BASE}/api/v1/crud/videos/${org_id}/${head_id}/${video_id}`,
+        {
+            headers,
+            method: "PUT",
+            body: JSON.stringify({ pads, alpha_blending })
+        }).then(() => updatePutStatus("✅"))
+        .catch(err => { addError("Update failed, check the console"), console.error(err), updatePutStatus("❌") })
+
 
 }
 
